@@ -1,0 +1,27 @@
+name: download
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number (supports fork PRs)'
+        required: false
+        type: string
+      url:
+        description: 'URL to download'
+        required: true
+        type: string
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pr_number && format('refs/pull/{0}/merge', inputs.pr_number) || 'master' }}
+
+      - name: Download and print file size
+        run: |
+          curl -L -o downloaded_file "${{ inputs.url }}"
+          ls -lh downloaded_file
+          stat --format='%s bytes' downloaded_file
